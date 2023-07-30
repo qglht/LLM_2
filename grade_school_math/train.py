@@ -2,19 +2,31 @@ import torch as th
 from dataset import get_examples, GSMDataset
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from transformers import GPT2Config, AdamW
+from transformers import AutoTokenizer, T5ForConditionalGeneration
 from transformers import get_scheduler
 from tqdm.auto import tqdm
 from torch.utils.data import DataLoader
+from datasets import load_dataset
 
 
 def main():
-    tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-    train_examples = get_examples("train")
+    # tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+    # train_examples = get_examples("train")
+
+    tokenizer = AutoTokenizer.from_pretrained("t5-small", model_max_length=512)
+    
+
+    train_dset = load_dataset("gsm8k", "main")
+
+    train_examples = train_dset["test"]
     train_dset = GSMDataset(tokenizer, train_examples)
 
-    device = th.device("cuda")
-    config = GPT2Config.from_pretrained("gpt2")
-    model = GPT2LMHeadModel.from_pretrained("gpt2", config=config)
+    # test_samples = train_dset["test"][:100]
+
+    device = th.device("cpu")
+    # config = GPT2Config.from_pretrained("gpt2")
+    # model = GPT2LMHeadModel.from_pretrained("gpt2", config=config)
+    model = T5ForConditionalGeneration.from_pretrained("t5-small")
     model.to(device)
     model.train()
 
