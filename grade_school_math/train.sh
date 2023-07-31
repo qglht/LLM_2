@@ -9,4 +9,4 @@
 
 module load gcc/8.2.0 python_gpu/3.10.4 eth_proxy
 pip install .
-python grade_school_math/train.py "$@"
+python train.py "$@"
